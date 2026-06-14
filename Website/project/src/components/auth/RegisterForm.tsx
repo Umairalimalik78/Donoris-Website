@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Mail, Lock, Eye, EyeOff, User, Phone, MapPin,
   Droplets, CheckCircle, ChevronRight, ChevronLeft, AlertCircle,
+  Check, UserPlus, Users,
 } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { registerUser } from '../../lib/auth';
 
 const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'] as const;
 const CITIES = ['Karachi', 'Lahore', 'Islamabad', 'Rawalpindi', 'Faisalabad', 'Multan', 'Peshawar', 'Quetta', 'Hyderabad', 'Sialkot'];
@@ -84,27 +85,21 @@ export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
     setLoading(true);
 
     try {
-      const { data, error: signUpError } = await supabase.auth.signUp({
+      const { data, error: signUpError } = await registerUser({
         email: form.email.trim(),
         password: form.password,
-      });
-      if (signUpError) throw signUpError;
-      if (!data.user) throw new Error('Registration failed. Please try again.');
-
-      const { error: profileError } = await supabase.from('profiles').insert({
-        id: data.user.id,
         full_name: form.full_name.trim(),
         gender: form.gender,
         age: parseInt(form.age),
-        blood_group: form.blood_group,
+        blood_group: form.blood_group as any,
         city: form.city,
         area: form.area.trim(),
         phone: form.phone.trim(),
         role: form.role,
         medical_eligible: form.medical_eligible,
       });
-
-      if (profileError) throw profileError;
+      if (signUpError) throw signUpError;
+      if (!data?.user) throw new Error('Registration failed. Please try again.');
       setDone(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong.');
@@ -156,7 +151,7 @@ export default function RegisterForm({ onSwitch }: { onSwitch: () => void }) {
               <div className={`w-7 h-7 flex items-center justify-center text-xs font-black flex-shrink-0 transition-all duration-300 ${
                 done ? 'bg-red-600 text-white' : active ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-400'
               }`}>
-                {done ? '✓' : s}
+                {done ? <Check className="w-4 h-4" /> : s}
               </div>
               <span className={`text-xs font-bold uppercase tracking-wide truncate transition-colors duration-200 ${
                 active ? 'text-gray-900' : done ? 'text-red-600' : 'text-gray-300'
@@ -346,11 +341,14 @@ function StepTwo({ form, set }: { form: FormData; set: (k: keyof FormData, v: un
                 key={r}
                 type="button"
                 onClick={() => set('role', r)}
-                className={`w-full mb-1.5 py-2.5 px-4 text-xs font-bold uppercase tracking-wide border-2 transition-all duration-200 text-left capitalize ${
+                className={`w-full mb-1.5 py-2.5 px-4 text-xs font-bold uppercase tracking-wide border-2 transition-all duration-200 text-left ${
                   form.role === r ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-200 text-gray-500 hover:border-gray-400'
                 }`}
               >
-                {r === 'donor' ? '+ Donor' : '⊕ Seeker'}
+                <span className="inline-flex items-center gap-2">
+                  {r === 'donor' ? <Users className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
+                  {r === 'donor' ? 'Donor' : 'Seeker'}
+                </span>
               </button>
             ))}
           </div>
@@ -368,7 +366,7 @@ function StepTwo({ form, set }: { form: FormData; set: (k: keyof FormData, v: un
         <div className={`w-5 h-5 border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
           form.medical_eligible ? 'border-red-600 bg-red-600' : 'border-gray-300'
         }`}>
-          {form.medical_eligible && <span className="text-white text-xs font-black">✓</span>}
+          {form.medical_eligible && <Check className="w-3.5 h-3.5 text-white" />}
         </div>
         <div>
           <p className="text-xs font-bold text-gray-900">I am medically eligible to donate blood</p>

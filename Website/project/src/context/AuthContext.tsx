@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase, Profile } from '../lib/supabase';
+import { getProfileById, getSession, onAuthStateChange, signOut as authSignOut } from '../lib/auth';
+import type { Profile, Session, User } from '../lib/auth';
 
 type AuthContextValue = {
   user: User | null;
@@ -20,11 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .maybeSingle();
+    const { data } = await getProfileById(userId);
     setProfile(data ?? null);
   };
 
@@ -33,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -43,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = onAuthStateChange((_, session) => {
       (async () => {
         setSession(session);
         setUser(session?.user ?? null);
@@ -60,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    await authSignOut();
   };
 
   return (

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Shield, Heart, Star, Trophy, Droplets } from 'lucide-react';
 import { useAuthModal } from '../context/AuthModalContext';
 
 const badges = [
@@ -6,7 +7,7 @@ const badges = [
     name: 'First Saver',
     donations: 1,
     description: 'You made your first life-saving donation.',
-    icon: '🩸',
+    icon: Droplets,
     color: 'from-orange-400 to-red-500',
     border: 'border-orange-300',
   },
@@ -14,7 +15,7 @@ const badges = [
     name: 'Life Saver',
     donations: 5,
     description: 'Five donations — five lives impacted.',
-    icon: '❤️',
+    icon: Heart,
     color: 'from-red-500 to-red-700',
     border: 'border-red-400',
   },
@@ -22,7 +23,7 @@ const badges = [
     name: 'Hero Donor',
     donations: 10,
     description: 'A decade of donations. True heroism.',
-    icon: '⭐',
+    icon: Star,
     color: 'from-yellow-400 to-orange-500',
     border: 'border-yellow-300',
   },
@@ -30,7 +31,7 @@ const badges = [
     name: 'Community Champion',
     donations: 25,
     description: 'Twenty-five lives. A community legend.',
-    icon: '🏆',
+    icon: Trophy,
     color: 'from-blue-400 to-blue-600',
     border: 'border-blue-300',
   },
@@ -38,7 +39,7 @@ const badges = [
     name: 'Blood Guardian',
     donations: 50,
     description: 'Fifty donations. An immortal legacy.',
-    icon: '🛡️',
+    icon: Shield,
     color: 'from-gray-600 to-gray-900',
     border: 'border-gray-400',
   },
@@ -95,8 +96,11 @@ export default function Badges() {
               <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${badge.color}`} />
 
               {/* Icon */}
-              <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br ${badge.color} flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                <span className="text-2xl">{badge.icon}</span>
+              <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br ${badge.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                {(() => {
+                  const Icon = badge.icon;
+                  return <Icon className="w-8 h-8 text-white" />;
+                })()}
               </div>
 
               <h3 className="font-condensed font-black uppercase text-sm text-gray-900 mb-1 leading-tight">

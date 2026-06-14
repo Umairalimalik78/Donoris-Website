@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, AlertCircle, LogIn } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { signInWithPassword } from '../../lib/auth';
 
 export default function LoginForm({ onSwitch }: { onSwitch: () => void }) {
   const [email, setEmail] = useState('');
@@ -18,7 +18,7 @@ export default function LoginForm({ onSwitch }: { onSwitch: () => void }) {
     if (!password) { setError('Password is required.'); return; }
 
     setLoading(true);
-    const { error: authError } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    const { error: authError } = await signInWithPassword({ email: email.trim(), password });
     setLoading(false);
 
     if (authError) {
@@ -28,7 +28,6 @@ export default function LoginForm({ onSwitch }: { onSwitch: () => void }) {
         setError(authError.message);
       }
     }
-    // On success, onAuthStateChange in AuthContext handles the session
   };
 
   return (
