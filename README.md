@@ -1,6 +1,7 @@
 # Donoris
 
-![Donoris Hero](assets/screenshots/hero.png)
+![Donoris Hero](assets/screenshots//Hero_Section.png
+)
 
 Donoris is a modern blood donor platform built as a responsive web application for Pakistan. It connects blood seekers with verified donors, supports emergency requests, and offers an engaging donor registration experience.
 
